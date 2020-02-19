@@ -181,26 +181,25 @@ void Tabla::drugiIgrac()
 {
     int najVrsta;
     int najKolona;
-	//float best = -INFINITY;
-    int best = 0;
+	int best = (int)INFINITY;
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
 			if (mat[i][j]->vrednost == '_') {
 				mat[i][j]->vrednost = 'X';
 				proveriOptimalno(1);
-				if (best <= opt) {
+				cout << "Best: " << best << endl;
+                cout << "Opt: " << opt << endl << endl;
+				if (best > opt) {
 					best = opt;
                     najVrsta = i;
                     najKolona = j;
 				}
-				cout << "Best: " << best << endl;
-                cout << "Opt: " << opt << endl;
 				opt = 0;
 				mat[i][j]->vrednost = '_';
 			}
 		}
 	}
-    mat[najVrsta][najKolona]->vrednost = 'X';
+   mat[najVrsta][najKolona]->vrednost = 'X';
 }
 
 void Tabla::proveriOptimalno(int koji)
@@ -212,13 +211,14 @@ void Tabla::proveriOptimalno(int koji)
                 if(mat[i][j]->vrednost == '_')
                 {
                     mat[i][j]->vrednost = 'O';
+                    if(oPobedio()){
+                        opt--;
+                        mat[i][j]->vrednost = '_';
+                        return;
+                    }
+                    proveriOptimalno(0);
+                    mat[i][j]->vrednost = '_';
                 }
-                if(oPobedio()){
-                    opt--;
-                    return;
-                }
-                proveriOptimalno(0);
-                mat[i][j]->vrednost = '_';
             }
         }
     }
@@ -230,13 +230,14 @@ void Tabla::proveriOptimalno(int koji)
                 if(mat[i][j]->vrednost == '_')
                 {
                     mat[i][j]->vrednost = 'X';
+                    if(xPobedio()){
+                        opt++;
+                        mat[i][j]->vrednost = '_';
+                        return;
+                    }
+                    proveriOptimalno(1);
+                    mat[i][j]->vrednost = '_';
                 }
-                if(xPobedio()){
-                    opt++;
-                    return;
-                }
-                proveriOptimalno(1);
-                mat[i][j]->vrednost = '_';
             }
         }
     }    
