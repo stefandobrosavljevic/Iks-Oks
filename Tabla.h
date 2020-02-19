@@ -182,7 +182,6 @@ void Tabla::drugiIgrac()
     int najVrsta;
     int najKolona;
 	int best = (int)INFINITY;
-    //int best = 0;
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
 			if (mat[i][j]->vrednost == '_') {
@@ -232,7 +231,7 @@ void Tabla::proveriOptimalno(int koji)
                 {
                     mat[i][j]->vrednost = 'X';
                     if(xPobedio()){
-                        //opt++;
+                        opt++;
                         mat[i][j]->vrednost = '_';
                         return;
                     }
