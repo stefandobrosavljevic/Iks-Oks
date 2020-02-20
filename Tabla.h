@@ -2,57 +2,41 @@
 #include <math.h>
 #include <iostream>
 using namespace std;
-int opt = 0;
-
-struct polje 
-{
-	char vrednost;
-	int vrsta;
-	int kolona;
-};
 
 class Tabla
 {
 private:
-	polje*** mat;
-public:
-	Tabla();
-	~Tabla();
-
+	char **mat;
 	void upis();
 	void prikaz();
 	void drugiIgrac();
-	bool pravilaIgre();
+	int proveriOptimalno(int);
 	bool xPobedio();
 	bool oPobedio();
+    bool tie();
+	bool pravilaIgre();
+public:
+	Tabla();
+	~Tabla();
 	void play();
-	void proveriOptimalno(int);
 };
 
 Tabla::Tabla()
 {
-	mat = new polje * *[3];
-	for (int i = 0; i < 3; i++) {
-		mat[i] = new polje * [3];
-		for (int j = 0; j < 3; j++) {
-			mat[i][j] = new polje;
-			mat[i][j]->vrednost = '_';
-		}
-	}
-
+    mat = new char*[3];
+    for(int i=0;i<3;i++){
+        mat[i] = new char[3];
+        for(int j=0;j<3;j++){
+            mat[i][j] = '_';
+        }
+    }
 }
 
 Tabla::~Tabla()
 {
-	if (mat != 0) {
-		for (int i = 0; i < 3; i++) {
-			for (int j = 0; j < 3; j++) {
-				delete mat[i][j];
-			}
-			delete[] mat[i];
-		}
-		delete[] mat;
-	}
+    for (int i = 0; i < 3; i++)
+        delete[] mat[i];
+    delete[] mat;
 }
 
 void Tabla::prikaz()
@@ -60,9 +44,8 @@ void Tabla::prikaz()
 	cout << "\n\n";
 	for (int i = 0; i < 3; i++) {
 		cout << "\t";
-		for (int j = 0; j < 3; j++) {
-			cout << mat[i][j]->vrednost << ' ';
-		}
+		for (int j = 0; j < 3; j++)
+			cout << mat[i][j] << ' ';
 		cout << endl;
 	}
 	cout << endl;
@@ -70,177 +53,156 @@ void Tabla::prikaz()
 
 void Tabla::upis()
 {
-	int vrst;
-	int kol;
-	int pom = 0;
-	cout << "Vrsta i kolona?" << endl;
 	do
 	{
+        cout << "Vrsta i kolona?" << endl;
+        int vrst;
+        int kol;
 		cin >> vrst >> kol;
 		if (vrst < 0 || vrst >2 || kol < 0 || kol >2) {
 			cout << "Pogresne dimenzije, uniesite ponovo\n";
             continue;
 		}
 
-		if (mat[vrst][kol]->vrednost == '_') {
-			mat[vrst][kol]->vrednost = 'O';
-			pom = 1;
+		if (mat[vrst][kol] == '_') {
+			mat[vrst][kol] = 'O';
+		    return;
 		}
 		else
 			cout << "Vec je odabrano to polje!" << endl;
 	}
-	while (pom == 0);
+	while (true);
 }
 
 bool Tabla::xPobedio()
 {
 	for (int i = 0; i < 3; i++) {
-		if (mat[i][0]->vrednost == 'X' &&
-			mat[i][1]->vrednost == 'X' &&
-			mat[i][2]->vrednost == 'X') {
-			//cout << "\n\t**X je pobedio**" << endl;
-			return 1;
-		}
-		if (mat[0][i]->vrednost == 'X' &&
-			mat[1][i]->vrednost == 'X' &&
-			mat[2][i]->vrednost == 'X') {
-			//cout << "\n\t**X je pobedio**" << endl;
-			return 1;
-		}
+		if (mat[i][0] == 'X' && mat[i][1] == 'X' && mat[i][2] == 'X')
+			return true;
+		if (mat[0][i] == 'X' && mat[1][i] == 'X' && mat[2][i] == 'X')
+			return true;
 	}
-	if (mat[0][0]->vrednost == 'X' &&
-		mat[1][1]->vrednost == 'X' &&
-		mat[2][2]->vrednost == 'X') {
-		//cout << "\n\t**X je pobedio**" << endl;
-		return 1;
-	}
-	if (mat[0][2]->vrednost == 'X' &&
-		mat[1][1]->vrednost == 'X' &&
-		mat[2][0]->vrednost == 'X') {
-		//cout << "\n\t**X je pobedio**" << endl;
-		return 1;
-	}
-	return 0;
+	if (mat[0][0] == 'X' && mat[1][1] == 'X' && mat[2][2] == 'X')
+		return true;
+	if (mat[0][2] == 'X' && mat[1][1] == 'X' && mat[2][0] == 'X')
+		return true; 
+	return false;
 }
 
 bool Tabla::oPobedio()
 {
 	for (int i = 0; i < 3; i++) {
+		if (mat[i][0] == 'O' && mat[i][1] == 'O' && mat[i][2] == 'O')
+			return true;
+		if (mat[0][i] == 'O' && mat[1][i] == 'O' && mat[2][i] == 'O')
+			return true;
+	}
+	if (mat[0][0] == 'O' && mat[1][1] == 'O' && mat[2][2] == 'O')
+		return true;
+	if (mat[0][2] == 'O' && mat[1][1] == 'O' && mat[2][0] == 'O')
+		return true; 
+	return false;
+}
 
-		if (mat[i][0]->vrednost == 'O' &&
-			mat[i][1]->vrednost == 'O' &&
-			mat[i][2]->vrednost == 'O') {
-			//cout << "\n\t**O je pobedio**" << endl;
-			return 1;
-		}
-		if (mat[0][i]->vrednost == 'O' &&
-			mat[1][i]->vrednost == 'O' &&
-			mat[2][i]->vrednost == 'O') {
-			//cout << "\n\t**O je pobedio**" << endl;
-			return 1;
-		}
-	}
-	if (mat[0][0]->vrednost == 'O' &&
-		mat[1][1]->vrednost == 'O' &&
-		mat[2][2]->vrednost == 'O') {
-		//cout << "\n\t**O je pobedio**" << endl;
-		return 1;
-	}
-	if (mat[0][2]->vrednost == 'O' &&
-		mat[1][1]->vrednost == 'O' &&
-		mat[2][0]->vrednost == 'O') {
-		//cout << "\n\t**O je pobedio**" << endl;
-		return 1;
-	}
-	return 0;
+bool Tabla::tie()
+{
+    for(int i=0;i<3;i++)
+        for(int j=0;j<3;j++)
+            if(mat[i][j] == '_')
+                return false;
+    return true;
 }
 
 bool Tabla::pravilaIgre()
 {
-	if (xPobedio() || oPobedio())
-		return 0;
-	else
-		return 1;
+	if (xPobedio() || oPobedio() || tie())
+		return true;
+    return false;
 }
 
 void Tabla::play()
 {
-	do 
-	{
+	while (!pravilaIgre()){
 		upis();
-		if (!pravilaIgre())
+		if (pravilaIgre())
 			break;
 		drugiIgrac();
 		prikaz();
-	} while (pravilaIgre());
-	prikaz();
-	cout << "*********Kraj igre************" << endl;
+    }
+    if(oPobedio())
+        cout << "    *****  O pobedio  *****"<< endl;
+    if(xPobedio())
+        cout << "    *****  X pobedio  *****"<< endl;
+    if(tie())
+        cout << "    *****  Nereseno  *****"<< endl;
 }
 
 void Tabla::drugiIgrac()
 {
     int najVrsta;
     int najKolona;
-	int best = (int)INFINITY;
+	int best = (int)-INFINITY;
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
-			if (mat[i][j]->vrednost == '_') {
-				mat[i][j]->vrednost = 'X';
-				proveriOptimalno(1);
-				cout << "Best: " << best << endl;
-                cout << "Opt: " << opt << endl << endl;
-				if (best > opt) {
-					best = opt;
+			if (mat[i][j] == '_') {
+				mat[i][j] = 'X';
+				int pom = proveriOptimalno(1);
+				if (best < pom) {
+					best = pom;
                     najVrsta = i;
                     najKolona = j;
 				}
-				opt = 0;
-				mat[i][j]->vrednost = '_';
+				mat[i][j] = '_';
 			}
 		}
 	}
-   mat[najVrsta][najKolona]->vrednost = 'X';
+   mat[najVrsta][najKolona] = 'X';
 }
 
-void Tabla::proveriOptimalno(int koji)
+int Tabla::proveriOptimalno(int koji)
 {
+    if(oPobedio())
+        return -10;
+    else if(xPobedio())
+        return 10;
+    else if (tie())
+        return 0;
+    //igra kao covek
     if(koji == 1)
     {
+        int best = (int)INFINITY;
 	    for (int i = 0; i < 3; i++) {
 		    for (int j = 0; j < 3; j++) {
-                if(mat[i][j]->vrednost == '_')
+                if(mat[i][j] == '_')
                 {
-                    mat[i][j]->vrednost = 'O';
-                    if(oPobedio()){
-                        opt--;
-                        mat[i][j]->vrednost = '_';
-                        return;
-                    }
-                    proveriOptimalno(0);
-                    mat[i][j]->vrednost = '_';
+                    mat[i][j] = 'O';
+                    int pom = proveriOptimalno(0);
+                    mat[i][j] = '_';
+                    if(best > pom)
+                        best = pom;
                 }
             }
         }
+        return best;
     }
 
-    else if(koji == 0)
+    //igra kompijuter
+    else
     {
-	    for (int i = 0; i < 3; i++) {
+        int best = (int)-INFINITY; 
+        for (int i = 0; i < 3; i++) {
 		    for (int j = 0; j < 3; j++) {
-                if(mat[i][j]->vrednost == '_')
+                if(mat[i][j] == '_')
                 {
-                    mat[i][j]->vrednost = 'X';
-                    if(xPobedio()){
-                        opt++;
-                        mat[i][j]->vrednost = '_';
-                        return;
-                    }
-                    proveriOptimalno(1);
-                    mat[i][j]->vrednost = '_';
+                    mat[i][j] = 'X';
+                    int pom = proveriOptimalno(1);
+                    mat[i][j] = '_';
+                    if(best < pom)
+                        best = pom;
                 }
             }
         }
+        return best;
     }    
 }
-
 
